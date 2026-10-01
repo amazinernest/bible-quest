@@ -1,0 +1,21 @@
+{
+  "name": "WORD QUEST — The Ultimate Bible Game",
+  "short_name": "Word Quest",
+  "description": "How well do you know the Word? Test your Bible knowledge in an immersive quest.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0F1D",
+  "theme_color": "#D97706",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
