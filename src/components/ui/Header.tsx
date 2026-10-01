@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useGame } from '@/context/GameContext';
 import { getLevelFromXp } from '@/lib/gameEngine';
 import {
@@ -10,23 +10,29 @@ import {
   VolumeX,
   Music,
   Settings,
-  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Trophy,
   Compass,
   BookOpen,
+  Shield,
+  Scroll,
+  Zap,
+  Gift,
 } from 'lucide-react';
 
 interface HeaderProps {
   currentView: string;
   setCurrentView: (view: any) => void;
   openSettings: () => void;
+  openWheel: () => void;
 }
 
-export default function Header({ currentView, setCurrentView, openSettings }: HeaderProps) {
+export default function Header({ currentView, setCurrentView, openSettings, openWheel }: HeaderProps) {
   const { profile, toggleSound, toggleMusic } = useGame();
   const levelInfo = getLevelFromXp(profile.xp);
+  const todayStr = new Date().toISOString().split('T')[0];
+  const hasSpunToday = profile.stats.lastSpinDate === todayStr;
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#0b1224]/90 backdrop-blur-md border-b border-amber-500/20 shadow-lg">
@@ -55,10 +61,10 @@ export default function Header({ currentView, setCurrentView, openSettings }: He
         </button>
 
         {/* DESKTOP NAV TABS */}
-        <nav className="hidden md:flex items-center gap-1 bg-[#131d35] p-1 rounded-xl border border-slate-700/60">
+        <nav className="hidden lg:flex items-center gap-1 bg-[#131d35] p-1 rounded-xl border border-slate-700/60">
           <button
             onClick={() => setCurrentView('home')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               currentView === 'home'
                 ? 'bg-amber-500 text-slate-950 shadow-md'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -69,7 +75,7 @@ export default function Header({ currentView, setCurrentView, openSettings }: He
           </button>
           <button
             onClick={() => setCurrentView('journey')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               currentView === 'journey'
                 ? 'bg-amber-500 text-slate-950 shadow-md'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -79,19 +85,52 @@ export default function Header({ currentView, setCurrentView, openSettings }: He
             Journey Map
           </button>
           <button
+            onClick={() => setCurrentView('relics')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+              currentView === 'relics'
+                ? 'bg-amber-500 text-slate-950 shadow-md'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <Shield className="w-3.5 h-3.5" />
+            Relics
+          </button>
+          <button
+            onClick={() => setCurrentView('arcade')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+              currentView === 'arcade'
+                ? 'bg-amber-500 text-slate-950 shadow-md'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <Zap className="w-3.5 h-3.5 text-orange-400" />
+            Speed Rush
+          </button>
+          <button
+            onClick={() => setCurrentView('codex')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+              currentView === 'codex'
+                ? 'bg-amber-500 text-slate-950 shadow-md'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <Scroll className="w-3.5 h-3.5" />
+            Codex
+          </button>
+          <button
             onClick={() => setCurrentView('leaderboard')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               currentView === 'leaderboard'
                 ? 'bg-amber-500 text-slate-950 shadow-md'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >
             <Trophy className="w-3.5 h-3.5" />
-            Leaderboard
+            Ranks
           </button>
           <button
             onClick={() => setCurrentView('shop')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               currentView === 'shop'
                 ? 'bg-amber-500 text-slate-950 shadow-md'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -103,7 +142,23 @@ export default function Header({ currentView, setCurrentView, openSettings }: He
         </nav>
 
         {/* STATUS HUD & BADGES */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* DAILY WHEEL SPIN BUTTON */}
+          <button
+            onClick={openWheel}
+            title={hasSpunToday ? 'Wheel of Providence (Spun Today)' : 'Free Daily Spin Available!'}
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border transition shadow-inner ${
+              !hasSpunToday
+                ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 border-yellow-200 animate-bounce'
+                : 'bg-slate-900 border-slate-800 text-slate-400'
+            }`}
+          >
+            <Gift className="w-4 h-4" />
+            <span className="text-[11px] font-black uppercase hidden sm:inline">
+              {!hasSpunToday ? 'Free Spin!' : 'Daily Wheel'}
+            </span>
+          </button>
+
           {/* LIVES */}
           <button
             onClick={() => setCurrentView('shop')}
@@ -143,19 +198,10 @@ export default function Header({ currentView, setCurrentView, openSettings }: He
           {/* LEVEL BADGE */}
           <button
             onClick={() => setCurrentView('profile')}
-            className="flex items-center gap-2 bg-[#17233f] border border-slate-700/80 px-2.5 py-1.5 rounded-xl hover:border-amber-400 transition"
+            className="flex items-center gap-2 bg-[#17233f] border border-slate-700/80 px-2 py-1.5 rounded-xl hover:border-amber-400 transition"
           >
             <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 text-slate-950 font-black text-xs flex items-center justify-center shadow">
               {levelInfo.level}
-            </div>
-            <div className="hidden lg:flex flex-col items-start text-left">
-              <span className="text-[10px] font-bold text-slate-200 leading-none">{profile.displayName}</span>
-              <div className="w-16 h-1.5 bg-slate-800 rounded-full mt-1 overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-amber-500 to-yellow-300"
-                  style={{ width: `${levelInfo.progressPercent}%` }}
-                />
-              </div>
             </div>
           </button>
 
@@ -178,7 +224,7 @@ export default function Header({ currentView, setCurrentView, openSettings }: He
             </button>
           </div>
 
-          {/* SETTINGS / ADMIN */}
+          {/* SETTINGS */}
           <button
             onClick={openSettings}
             title="Game Settings"

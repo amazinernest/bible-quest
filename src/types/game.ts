@@ -6,7 +6,9 @@ export type GameMode =
   | 'who_said_it'
   | 'timeline'
   | 'sort'
-  | 'daily';
+  | 'daily'
+  | 'arcade_rush'
+  | 'boss_duel';
 
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
@@ -22,7 +24,7 @@ export type QuestionType =
 export interface TimelineItem {
   id: string;
   title: string;
-  order: number; // 1-based chronological order
+  order: number;
   dateOrEra?: string;
 }
 
@@ -44,21 +46,35 @@ export interface Question {
   type: QuestionType;
   options?: string[];
   correctAnswer: string | boolean | string[];
-  clues?: string[]; // For Who Am I mode (e.g. 4 progressive clues)
-  timelineItems?: TimelineItem[]; // For Bible Timeline mode
-  sortCategories?: SortCategory[]; // For Bible Sort mode
-  sortItems?: SortItem[]; // For Bible Sort mode
+  clues?: string[];
+  timelineItems?: TimelineItem[];
+  sortCategories?: SortCategory[];
+  sortItems?: SortItem[];
   explanation: string;
-  reference: string; // e.g. "Genesis 1:1"
-  translation?: string; // e.g. "NIV", "ESV", "KJV"
+  reference: string;
+  translation?: string;
   difficulty: Difficulty;
   category: string;
-  level: number; // 1 to 10
-  stage: number; // 1 to 9
-  timeLimit: number; // in seconds
+  level: number;
+  stage: number;
+  timeLimit: number;
   xpReward: number;
   points: number;
   tags?: string[];
+}
+
+export interface Relic {
+  id: string;
+  name: string;
+  title: string;
+  icon: string;
+  description: string;
+  perkDescription: string;
+  perkType: 'shield' | 'time_boost' | 'xp_boost' | 'free_hint' | 'combo_boost' | 'critical_strike';
+  cost: number;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  unlocked: boolean;
+  equipped: boolean;
 }
 
 export interface Stage {
@@ -74,6 +90,10 @@ export interface Stage {
   xpReward: number;
   coinReward: number;
   isBossStage?: boolean;
+  bossName?: string;
+  bossTitle?: string;
+  bossAvatar?: string;
+  bossHp?: number;
 }
 
 export interface Level {
@@ -118,7 +138,7 @@ export interface LeaderboardUser {
 
 export interface DailyChallengeConfig {
   id: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   title: string;
   description: string;
   targetCount: number;
@@ -141,6 +161,19 @@ export interface FriendChallengeData {
   timestamp: number;
 }
 
+export interface CodexEntry {
+  id: string;
+  title: string;
+  subtitle: string;
+  era: string;
+  book: string;
+  icon: string;
+  unlocked: boolean;
+  summary: string;
+  hebrewGreekInsight: string;
+  archaeologyFact: string;
+}
+
 export interface PlayerStats {
   totalGames: number;
   totalQuestionsAnswered: number;
@@ -151,6 +184,9 @@ export interface PlayerStats {
   dailyStreak: number;
   lastDailyChallengeDate: string | null;
   lastLoginDate: string;
+  lastSpinDate: string | null;
+  arcadeRushHighScore: number;
+  bossesDefeated: number;
   stagesCompleted: number;
   starsEarned: number;
   hintsUsed: number;
@@ -175,7 +211,7 @@ export interface PlayerProfile {
   wisdomCoins: number;
   lives: number;
   maxLives: number;
-  lastLifeRegenTime: number; // timestamp ms
+  lastLifeRegenTime: number;
   isSoundEnabled: boolean;
   isMusicEnabled: boolean;
   soundVolume: number;
@@ -187,9 +223,26 @@ export interface PlayerProfile {
   completedDailyDates: string[];
   achievements: Record<string, { unlocked: boolean; unlockedAt: string; progress: number }>;
   inventory: PowerupInventory;
+  relics: Record<string, boolean>; // relicId -> isUnlocked
+  equippedRelicId: string | null;
+  unlockedCodexIds: string[];
   stats: PlayerStats;
   hasCompletedOnboarding: boolean;
   selectedTranslation: string;
+}
+
+export interface BossFightState {
+  bossName: string;
+  bossTitle: string;
+  bossAvatar: string;
+  bossMaxHp: number;
+  bossCurrentHp: number;
+  playerMaxHp: number;
+  playerCurrentHp: number;
+  lastPlayerDamage: number;
+  lastBossDamage: number;
+  bossDialogue: string;
+  isDefeated: boolean;
 }
 
 export interface GameRoundState {
@@ -212,6 +265,7 @@ export interface GameRoundState {
   isAnswerSubmitted: boolean;
   selectedOption: any;
   isCorrect: boolean | null;
+  isCriticalStrike?: boolean;
   revealedCluesCount: number;
   activeFiftyFiftyOptions: string[];
   userTimelineOrder: TimelineItem[];
@@ -224,4 +278,6 @@ export interface GameRoundState {
   earnedStars: number;
   isDailyChallenge?: boolean;
   isPracticeMode?: boolean;
+  bossState?: BossFightState;
+  arcadeRushTime?: number;
 }

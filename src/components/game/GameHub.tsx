@@ -12,6 +12,7 @@ import ArenaTimeline from './ArenaTimeline';
 import ArenaSort from './ArenaSort';
 import RoundResults from './RoundResults';
 import GameOverModal from './GameOverModal';
+import BossHud from './BossHud';
 import FriendChallengeModal from '../modals/FriendChallengeModal';
 
 interface GameHubProps {
@@ -60,7 +61,10 @@ export default function GameHub({ onReturnToJourney, onGoToShop }: GameHubProps)
     <div className="w-full max-w-2xl mx-auto px-4 py-6 space-y-6 flex flex-col items-center">
       {/* ARENA HEADER HUD */}
       {!activeRound.isRoundComplete && !activeRound.isGameOver && (
-        <ArenaHeader onQuit={quitRound} />
+        <>
+          <ArenaHeader onQuit={quitRound} />
+          {activeRound.bossState && <BossHud />}
+        </>
       )}
 
       {/* GAME OVER MODAL */}

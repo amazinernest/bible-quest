@@ -57,6 +57,9 @@ const INITIAL_PROFILE: PlayerProfile = {
     secondChance: 1,
     clueReveal: 2,
   },
+  relics: {},
+  equippedRelicId: null,
+  unlockedCodexIds: ['codex-creation-eden'],
   stats: {
     totalGames: 0,
     totalQuestionsAnswered: 0,
@@ -67,6 +70,9 @@ const INITIAL_PROFILE: PlayerProfile = {
     dailyStreak: 1,
     lastDailyChallengeDate: null,
     lastLoginDate: new Date().toISOString().split('T')[0],
+    lastSpinDate: null,
+    arcadeRushHighScore: 0,
+    bossesDefeated: 0,
     stagesCompleted: 0,
     starsEarned: 0,
     hintsUsed: 0,
@@ -389,6 +395,38 @@ export function GameProvider({ children }: { children: ReactNode }) {
         });
       }
 
+      // Relic Perks Integration
+      let extraTime = 0;
+      if (profile.equippedRelicId === 'relic-staff-moses') {
+        extraTime = 5; // Staff of Moses passive
+      }
+
+      // Boss State
+      let bossState = undefined;
+      if (stageDef?.isBossStage) {
+        const bossNames = [
+          { name: 'Pharaoh of Egypt', title: 'Ruler of the Pyramids', dialogue: 'I will not let Israel go!' },
+          { name: 'Goliath of Gath', title: 'Champion of the Philistines', dialogue: 'Who can stand against my bronze spear?' },
+          { name: 'Prophets of Baal', title: 'Priests of Mount Carmel', dialogue: 'Our god will answer by fire!' },
+          { name: 'Sanhedrin Council', title: 'Accusers of the Apostles', dialogue: 'You must cease speaking in this Name!' },
+          { name: 'The Dragon of Patmos', title: 'Adversary of the Overcomers', dialogue: 'My wrath is fierce!' },
+        ];
+        const bossInfo = bossNames[levelNumber % bossNames.length];
+        bossState = {
+          bossName: bossInfo.name,
+          bossTitle: bossInfo.title,
+          bossAvatar: 'Skull',
+          bossMaxHp: 600,
+          bossCurrentHp: 600,
+          playerMaxHp: 300,
+          playerCurrentHp: 300,
+          lastPlayerDamage: 0,
+          lastBossDamage: 0,
+          bossDialogue: bossInfo.dialogue,
+          isDefeated: false,
+        };
+      }
+
       audioEngine.playClick();
       setActiveRound({
         mode: stageDef?.gameMode || 'blitz',
@@ -405,7 +443,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         wrongCount: 0,
         startTime: Date.now(),
         questionStartTime: Date.now(),
-        timeRemaining: firstQ.timeLimit || 15,
+        timeRemaining: (firstQ.timeLimit || 15) + extraTime,
         isTimerActive: true,
         isAnswerSubmitted: false,
         selectedOption: null,
@@ -421,9 +459,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
         gainedCoins: 0,
         earnedStars: 0,
         isPracticeMode: isPractice,
+        bossState,
       });
     },
-    [profile.lives, showToast]
+    [profile.lives, profile.equippedRelicId, showToast]
   );
 
   const startModeRound = useCallback(
@@ -454,6 +493,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
         });
       }
 
+      let extraTime = 0;
+      if (profile.equippedRelicId === 'relic-staff-moses') {
+        extraTime = 5;
+      }
+
       audioEngine.playClick();
       setActiveRound({
         mode,
@@ -467,7 +511,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         wrongCount: 0,
         startTime: Date.now(),
         questionStartTime: Date.now(),
-        timeRemaining: firstQ.timeLimit || 15,
+        timeRemaining: (firstQ.timeLimit || 15) + extraTime,
         isTimerActive: true,
         isAnswerSubmitted: false,
         selectedOption: null,
@@ -485,7 +529,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         isPracticeMode: isPractice,
       });
     },
-    [profile.lives, showToast]
+    [profile.lives, profile.equippedRelicId, showToast]
   );
 
   const startDailyChallenge = useCallback(() => {
@@ -493,6 +537,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const questions = getQuestionsForMode(challenge.gameMode, challenge.targetCount);
 
     const firstQ = questions[0];
+    let extraTime = profile.equippedRelicId === 'relic-staff-moses' ? 5 : 0;
+
     audioEngine.playClick();
     setActiveRound({
       mode: challenge.gameMode,
@@ -506,7 +552,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       wrongCount: 0,
       startTime: Date.now(),
       questionStartTime: Date.now(),
-      timeRemaining: firstQ.timeLimit || 15,
+      timeRemaining: (firstQ.timeLimit || 15) + extraTime,
       isTimerActive: true,
       isAnswerSubmitted: false,
       selectedOption: null,
@@ -524,7 +570,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       isDailyChallenge: true,
       isPracticeMode: false,
     });
-  }, []);
+  }, [profile.equippedRelicId]);
 
   // SUBMIT ANSWER
   const submitAnswer = useCallback(
@@ -540,11 +586,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
         isCorrect = String(userAnswer).trim().toLowerCase() === String(currentQ.correctAnswer).trim().toLowerCase();
       }
 
-      const nextStreak = isCorrect ? activeRound.currentStreak + 1 : 0;
+      // Check Shield of Faith Relic Protection
+      let shieldAbsorbed = false;
+      if (!isCorrect && profile.equippedRelicId === 'relic-shield-faith' && !activeRound.isGameOver) {
+        shieldAbsorbed = true;
+        showToast({
+          type: 'info',
+          title: '🛡️ Shield of Faith Absorbed Blow!',
+          subtitle: 'Protected life and streak from damage.',
+        });
+      }
+
+      const nextStreak = isCorrect ? activeRound.currentStreak + 1 : (shieldAbsorbed ? activeRound.currentStreak : 0);
       const roundStreakMax = Math.max(activeRound.roundStreakMax, nextStreak);
 
       // Score calculation
-      const { scoreGained } = calculateScore(
+      let { scoreGained } = calculateScore(
         isCorrect,
         activeRound.timeRemaining,
         currentQ.timeLimit || 15,
@@ -553,11 +610,47 @@ export function GameProvider({ children }: { children: ReactNode }) {
         activeRound.revealedCluesCount
       );
 
+      // Check Relic Perks: Trumpet of Gideon (Critical Strike under 3s)
       const isFast = activeRound.timeRemaining >= (currentQ.timeLimit || 15) * 0.6;
-      const questionXp = calculateXpForQuestion(isCorrect, isFast, currentQ.difficulty);
+      const elapsedSeconds = (Date.now() - activeRound.questionStartTime) / 1000;
+      let isCriticalStrike = false;
+
+      if (isCorrect && elapsedSeconds <= 3.0 && profile.equippedRelicId === 'relic-trumpet-gideon') {
+        isCriticalStrike = true;
+        scoreGained = Math.round(scoreGained * 2.5);
+        audioEngine.playCriticalHit();
+        showToast({
+          type: 'streak',
+          title: '⚡ CRITICAL DIVINE STRIKE! 2.5x',
+          subtitle: 'Trumpet of Gideon boosted your score!',
+        });
+      }
+
+      // Check Relic Perks: Harp of David (+50% XP)
+      let questionXp = calculateXpForQuestion(isCorrect, isFast, currentQ.difficulty);
+      if (profile.equippedRelicId === 'relic-harp-david') {
+        questionXp = Math.round(questionXp * 1.5);
+      }
+
+      // Boss Battle Damage Logic
+      let nextBossState = activeRound.bossState ? { ...activeRound.bossState } : undefined;
+      if (nextBossState) {
+        if (isCorrect) {
+          const bossDmg = isCriticalStrike ? 250 : 150;
+          nextBossState.bossCurrentHp = Math.max(0, nextBossState.bossCurrentHp - bossDmg);
+          nextBossState.lastPlayerDamage = bossDmg;
+          nextBossState.bossDialogue = 'Ugh! The light burns!';
+          audioEngine.playBossHit();
+        } else if (!shieldAbsorbed) {
+          const playerDmg = 75;
+          nextBossState.playerCurrentHp = Math.max(0, nextBossState.playerCurrentHp - playerDmg);
+          nextBossState.lastBossDamage = playerDmg;
+          nextBossState.bossDialogue = 'Your faith wavers, mortal!';
+        }
+      }
 
       if (isCorrect) {
-        audioEngine.playCorrect(nextStreak);
+        if (!isCriticalStrike) audioEngine.playCorrect(nextStreak);
         if (nextStreak === 3 || nextStreak === 5 || nextStreak === 10 || nextStreak === 20) {
           audioEngine.playStreak(nextStreak);
           showToast({
@@ -566,7 +659,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
             subtitle: `Streak Multiplier Boosted!`,
           });
         }
-      } else {
+      } else if (!shieldAbsorbed) {
         audioEngine.playWrong();
         if (!activeRound.isPracticeMode) {
           setProfile((p) => ({
@@ -597,7 +690,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         };
       });
 
-      const isGameOver = !isCorrect && !activeRound.isPracticeMode && profile.lives <= 1;
+      const isGameOver = !isCorrect && !shieldAbsorbed && !activeRound.isPracticeMode && profile.lives <= 1;
 
       setActiveRound((prev) => {
         if (!prev) return null;
@@ -607,6 +700,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
           isAnswerSubmitted: true,
           selectedOption: userAnswer,
           isCorrect,
+          isCriticalStrike,
           score: prev.score + scoreGained,
           currentStreak: nextStreak,
           roundStreakMax,
@@ -614,10 +708,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
           wrongCount: prev.wrongCount + (isCorrect ? 0 : 1),
           gainedXp: prev.gainedXp + questionXp,
           isGameOver,
+          bossState: nextBossState,
         };
       });
     },
-    [activeRound, profile.lives, showToast]
+    [activeRound, profile.lives, profile.equippedRelicId, showToast]
   );
 
   // TIMELINE & SORT ANSWER SUBMISSION

@@ -4,6 +4,7 @@ import React from 'react';
 import { useGame } from '@/context/GameContext';
 import { LEVELS_CONFIG } from '@/lib/levelDefinitions';
 import { GameMode } from '@/types/game';
+import { MASTER_RELICS } from '@/lib/relics';
 import {
   Sparkles,
   Flame,
@@ -23,14 +24,18 @@ import {
   Star,
   Users,
   Check,
+  Zap,
+  Gift,
+  Shield,
 } from 'lucide-react';
 
 interface HomeViewProps {
   onNavigate: (view: string) => void;
   onStartMode: (mode: GameMode) => void;
+  onOpenWheel?: () => void;
 }
 
-export default function HomeView({ onNavigate, onStartMode }: HomeViewProps) {
+export default function HomeView({ onNavigate, onStartMode, onOpenWheel }: HomeViewProps) {
   const {
     profile,
     startDailyChallenge,
@@ -45,6 +50,9 @@ export default function HomeView({ onNavigate, onStartMode }: HomeViewProps) {
   const lastStgNum = parseInt(lastStgStr, 10);
   const activeLevelDef = LEVELS_CONFIG.find((l) => l.levelNumber === lastLvlNum) || LEVELS_CONFIG[0];
   const activeStageDef = activeLevelDef.stages.find((s) => s.stageNumber === lastStgNum) || activeLevelDef.stages[0];
+  const equippedRelic = MASTER_RELICS.find((r) => r.id === profile.equippedRelicId);
+  const todayStr = new Date().toISOString().split('T')[0];
+  const hasSpunToday = profile.stats.lastSpinDate === todayStr;
 
   const gameModesList = [
     {
@@ -105,7 +113,6 @@ export default function HomeView({ onNavigate, onStartMode }: HomeViewProps) {
     },
   ];
 
-  const todayStr = new Date().toISOString().split('T')[0];
   const isDailyCompletedToday = profile.completedDailyDates.includes(todayStr);
 
   return (
@@ -135,15 +142,105 @@ export default function HomeView({ onNavigate, onStartMode }: HomeViewProps) {
               className="py-3.5 px-8 rounded-2xl font-black text-sm uppercase tracking-wider text-slate-950 btn-game-primary shadow-xl shadow-amber-500/20 flex items-center gap-2"
             >
               <Play className="w-4 h-4 fill-slate-950" />
-              PLAY NOW
+              PLAY JOURNEY
             </button>
             <button
-              onClick={() => onNavigate('leaderboard')}
+              onClick={() => onNavigate('arcade')}
+              className="py-3.5 px-6 rounded-2xl font-bold text-xs uppercase tracking-wider bg-orange-600 hover:bg-orange-500 text-white border border-orange-400 transition flex items-center gap-2 shadow-lg"
+            >
+              <Zap className="w-4 h-4 text-yellow-300" />
+              Speed Rush
+            </button>
+            <button
+              onClick={() => onNavigate('relics')}
               className="py-3.5 px-6 rounded-2xl font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 transition flex items-center gap-2"
             >
-              <Trophy className="w-4 h-4 text-amber-400" />
-              Leaderboard
+              <Shield className="w-4 h-4 text-amber-400" />
+              Relics
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* SPECIAL FEATURE HUBS (Wheel, Speed Rush, Relics, Codex) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Daily Wheel */}
+        <div
+          onClick={onOpenWheel}
+          className="p-4 rounded-2xl bg-gradient-to-br from-amber-950/40 to-[#121c33] border border-amber-500/40 hover:border-amber-400 transition cursor-pointer shadow-md flex flex-col justify-between space-y-3 group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-amber-300 group-hover:scale-110 transition-transform">
+              <Gift className="w-5 h-5" />
+            </div>
+            {!hasSpunToday ? (
+              <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 animate-pulse">
+                Ready!
+              </span>
+            ) : (
+              <span className="text-[9px] font-mono text-slate-500">Spun</span>
+            )}
+          </div>
+          <div>
+            <h4 className="text-sm font-black text-white">Daily Wheel</h4>
+            <p className="text-[11px] text-slate-400 mt-0.5">Free blessing spin</p>
+          </div>
+        </div>
+
+        {/* Speed Rush */}
+        <div
+          onClick={() => onNavigate('arcade')}
+          className="p-4 rounded-2xl bg-gradient-to-br from-orange-950/40 to-[#121c33] border border-orange-500/40 hover:border-orange-400 transition cursor-pointer shadow-md flex flex-col justify-between space-y-3 group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl bg-orange-500/20 border border-orange-400/50 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform">
+              <Zap className="w-5 h-5" />
+            </div>
+            <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/40">
+              60s
+            </span>
+          </div>
+          <div>
+            <h4 className="text-sm font-black text-white">Speed Rush</h4>
+            <p className="text-[11px] text-slate-400 mt-0.5">High-speed gauntlet</p>
+          </div>
+        </div>
+
+        {/* Relics Sanctuary */}
+        <div
+          onClick={() => onNavigate('relics')}
+          className="p-4 rounded-2xl bg-gradient-to-br from-purple-950/40 to-[#121c33] border border-purple-500/40 hover:border-purple-400 transition cursor-pointer shadow-md flex flex-col justify-between space-y-3 group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-400/50 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform">
+              <Shield className="w-5 h-5" />
+            </div>
+            <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40">
+              Perks
+            </span>
+          </div>
+          <div>
+            <h4 className="text-sm font-black text-white">Holy Relics</h4>
+            <p className="text-[11px] text-slate-400 mt-0.5">{equippedRelic ? equippedRelic.name : 'Equip perks'}</p>
+          </div>
+        </div>
+
+        {/* Codex Lore */}
+        <div
+          onClick={() => onNavigate('codex')}
+          className="p-4 rounded-2xl bg-gradient-to-br from-emerald-950/40 to-[#121c33] border border-emerald-500/40 hover:border-emerald-400 transition cursor-pointer shadow-md flex flex-col justify-between space-y-3 group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition-transform">
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+              Lore
+            </span>
+          </div>
+          <div>
+            <h4 className="text-sm font-black text-white">Lore Codex</h4>
+            <p className="text-[11px] text-slate-400 mt-0.5">Linguistics & archaeology</p>
           </div>
         </div>
       </div>
@@ -151,9 +248,16 @@ export default function HomeView({ onNavigate, onStartMode }: HomeViewProps) {
       {/* CONTINUE JOURNEY BANNER */}
       <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-[#172646] to-[#121c32] border-2 border-amber-500/40 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-left relative overflow-hidden">
         <div className="space-y-1 z-10">
-          <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">
-            Continue Where You Left Off
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-black uppercase tracking-wider text-amber-400">
+              Continue Where You Left Off
+            </span>
+            {activeStageDef.isBossStage && (
+              <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-red-600 text-white animate-pulse">
+                Boss Battle
+              </span>
+            )}
+          </div>
           <h3 className="text-lg sm:text-xl font-black text-white">
             Level {activeLevelDef.levelNumber}: {activeLevelDef.title}
           </h3>

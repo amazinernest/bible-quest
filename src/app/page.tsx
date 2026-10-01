@@ -16,6 +16,10 @@ import SanctuaryShop from '@/components/shop/SanctuaryShop';
 import ProfileView from '@/components/profile/ProfileView';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import GameHub from '@/components/game/GameHub';
+import RelicsSanctuary from '@/components/relics/RelicsSanctuary';
+import CodexView from '@/components/codex/CodexView';
+import ArcadeRushHub from '@/components/arcade/ArcadeRushHub';
+import DailyWheelModal from '@/components/modals/DailyWheelModal';
 import { decodeFriendChallenge } from '@/lib/gameEngine';
 import { GameMode } from '@/types/game';
 
@@ -29,6 +33,7 @@ function MainGameApp() {
 
   const [currentView, setCurrentView] = useState<string>('home');
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isWheelOpen, setIsWheelOpen] = useState<boolean>(false);
   const searchParams = useSearchParams();
 
   // Check URL challenge parameter
@@ -67,6 +72,7 @@ function MainGameApp() {
           currentView={currentView}
           setCurrentView={setCurrentView}
           openSettings={() => setIsSettingsOpen(true)}
+          openWheel={() => setIsWheelOpen(true)}
         />
       )}
 
@@ -83,9 +89,13 @@ function MainGameApp() {
               <HomeView
                 onNavigate={setCurrentView}
                 onStartMode={handleStartMode}
+                onOpenWheel={() => setIsWheelOpen(true)}
               />
             )}
             {currentView === 'journey' && <JourneyMap />}
+            {currentView === 'relics' && <RelicsSanctuary />}
+            {currentView === 'arcade' && <ArcadeRushHub onBack={() => setCurrentView('home')} />}
+            {currentView === 'codex' && <CodexView />}
             {currentView === 'leaderboard' && <LeaderboardView />}
             {currentView === 'achievements' && <AchievementsView />}
             {currentView === 'shop' && <SanctuaryShop />}
@@ -110,6 +120,12 @@ function MainGameApp() {
 
       {/* First-Time Player Onboarding */}
       <OnboardingModal />
+
+      {/* Daily Wheel of Providence */}
+      <DailyWheelModal
+        isOpen={isWheelOpen}
+        onClose={() => setIsWheelOpen(false)}
+      />
 
       {/* Settings Modal */}
       <SettingsModal
