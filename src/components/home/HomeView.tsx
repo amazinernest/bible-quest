@@ -138,11 +138,18 @@ export default function HomeView({ onNavigate, onStartMode, onOpenWheel }: HomeV
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
-              onClick={() => onNavigate('journey')}
-              className="py-3.5 px-8 rounded-2xl font-black text-sm uppercase tracking-wider text-slate-950 btn-game-primary shadow-xl shadow-amber-500/20 flex items-center gap-2"
+              onClick={() => onNavigate('world3d')}
+              className="py-3.5 px-8 rounded-2xl font-black text-sm uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:scale-105 transition-all shadow-xl shadow-amber-500/30 flex items-center gap-2 border border-yellow-200"
             >
-              <Play className="w-4 h-4 fill-slate-950" />
-              PLAY JOURNEY
+              <span>🏎️</span>
+              PLAY 3D WORLD
+            </button>
+            <button
+              onClick={() => onNavigate('journey')}
+              className="py-3.5 px-6 rounded-2xl font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 transition flex items-center gap-2"
+            >
+              <Play className="w-4 h-4 fill-amber-400 text-amber-400" />
+              Journey Map
             </button>
             <button
               onClick={() => onNavigate('arcade')}
@@ -151,14 +158,33 @@ export default function HomeView({ onNavigate, onStartMode, onOpenWheel }: HomeV
               <Zap className="w-4 h-4 text-yellow-300" />
               Speed Rush
             </button>
-            <button
-              onClick={() => onNavigate('relics')}
-              className="py-3.5 px-6 rounded-2xl font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 transition flex items-center gap-2"
-            >
-              <Shield className="w-4 h-4 text-amber-400" />
-              Relics
-            </button>
           </div>
+        </div>
+      </div>
+
+      {/* 3D SANDBOX WORLD SHOWCASE BANNER */}
+      <div
+        onClick={() => onNavigate('world3d')}
+        className="p-6 rounded-3xl bg-gradient-to-r from-amber-950/60 via-[#152342] to-[#1e1435] border-2 border-amber-400/80 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5 text-left cursor-pointer hover:border-amber-300 transition-all group overflow-hidden relative"
+      >
+        <div className="space-y-1.5 z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5" />
+            3D Physics Sandbox • Inspired by Bruno Simon
+          </div>
+          <h3 className="text-xl sm:text-2xl font-black text-white group-hover:text-amber-300 transition-colors">
+            DRIVE THE CHARIOT OF FIRE IN 3D!
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
+            Drive freely across Mount Sinai, smash through the physical Walls of Jericho, cruise through the parted Red Sea, collect golden shekels, and uncover hidden biblical lore shrines.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0 z-10">
+          <button className="py-3.5 px-6 rounded-xl font-black text-xs uppercase tracking-wider text-slate-950 btn-game-primary flex items-center gap-2 shadow-xl group-hover:scale-105 transition-transform">
+            <span>ENTER 3D WORLD</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

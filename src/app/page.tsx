@@ -16,6 +16,7 @@ import SanctuaryShop from '@/components/shop/SanctuaryShop';
 import ProfileView from '@/components/profile/ProfileView';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import GameHub from '@/components/game/GameHub';
+import BibleWorld3D from '@/components/world3d/BibleWorld3D';
 import RelicsSanctuary from '@/components/relics/RelicsSanctuary';
 import CodexView from '@/components/codex/CodexView';
 import ArcadeRushHub from '@/components/arcade/ArcadeRushHub';
@@ -90,6 +91,13 @@ function MainGameApp() {
                 onNavigate={setCurrentView}
                 onStartMode={handleStartMode}
                 onOpenWheel={() => setIsWheelOpen(true)}
+              />
+            )}
+            {currentView === 'world3d' && (
+              <BibleWorld3D
+                onStartMode={handleStartMode}
+                onStartStage={(lvl, stg, isBoss) => startStageRound(lvl, stg, isBoss)}
+                onSwitchTo2D={() => setCurrentView('home')}
               />
             )}
             {currentView === 'journey' && <JourneyMap />}

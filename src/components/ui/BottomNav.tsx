@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Home, Sparkles, Trophy, ShoppingBag, Shield, Zap, BookOpen } from 'lucide-react';
+import { Home, Sparkles, Trophy, ShoppingBag, Shield, Zap, BookOpen, Flame } from 'lucide-react';
 
 interface BottomNavProps {
   currentView: string;
@@ -11,9 +11,10 @@ interface BottomNavProps {
 export default function BottomNav({ currentView, setCurrentView }: BottomNavProps) {
   const tabs = [
     { id: 'home', label: 'Home', icon: Home },
+    { id: 'world3d', label: '3D World', icon: Zap },
     { id: 'journey', label: 'Journey', icon: Sparkles },
     { id: 'relics', label: 'Relics', icon: Shield },
-    { id: 'arcade', label: 'Speed Rush', icon: Zap },
+    { id: 'arcade', label: 'Speed Rush', icon: Flame },
     { id: 'codex', label: 'Codex', icon: BookOpen },
     { id: 'shop', label: 'Sanctuary', icon: ShoppingBag },
   ];

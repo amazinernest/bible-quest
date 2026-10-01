@@ -74,6 +74,17 @@ export default function Header({ currentView, setCurrentView, openSettings, open
             Home
           </button>
           <button
+            onClick={() => setCurrentView('world3d')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+              currentView === 'world3d'
+                ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black shadow-md'
+                : 'text-amber-300 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <span>🏎️</span>
+            3D Explorer
+          </button>
+          <button
             onClick={() => setCurrentView('journey')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               currentView === 'journey'
