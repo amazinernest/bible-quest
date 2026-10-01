@@ -99,7 +99,7 @@ export default function BibleWorld3D({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.1;
     container.appendChild(renderer.domElement);
@@ -374,67 +374,80 @@ export default function BibleWorld3D({
         </div>
       </div>
 
-      {/* MOBILE TOUCH CONTROLS OVERLAY */}
-      <div className="md:hidden absolute bottom-4 left-4 right-4 flex items-end justify-between pointer-events-auto z-10">
+      {/* ON-SCREEN CONTROLS OVERLAY (Works on both touch and mouse clicks) */}
+      <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between pointer-events-auto z-10">
         {/* D-PAD / STEERING BUTTONS */}
-        <div className="grid grid-cols-3 gap-1.5 w-36">
-          <div />
-          <button
-            onTouchStart={() => (controlsRef.current.forward = true)}
-            onTouchEnd={() => (controlsRef.current.forward = false)}
-            onMouseDown={() => (controlsRef.current.forward = true)}
-            onMouseUp={() => (controlsRef.current.forward = false)}
-            className="w-11 h-11 rounded-xl bg-slate-900/90 active:bg-amber-500 border border-slate-700 flex items-center justify-center text-white"
-          >
-            <ArrowUp className="w-5 h-5" />
-          </button>
-          <div />
+        <div className="bg-[#0B1224]/80 backdrop-blur-md p-2 rounded-2xl border border-slate-700/80 shadow-2xl">
+          <div className="grid grid-cols-3 gap-1.5 w-36 sm:w-44">
+            <div />
+            <button
+              onTouchStart={() => (controlsRef.current.forward = true)}
+              onTouchEnd={() => (controlsRef.current.forward = false)}
+              onMouseDown={() => (controlsRef.current.forward = true)}
+              onMouseUp={() => (controlsRef.current.forward = false)}
+              onMouseLeave={() => (controlsRef.current.forward = false)}
+              title="Drive Forward (W / Up)"
+              className="w-11 sm:w-13 h-11 sm:h-13 rounded-xl bg-slate-900 active:bg-amber-500 hover:bg-slate-800 border-2 border-slate-700 active:border-yellow-300 flex items-center justify-center text-white font-black shadow transition-all"
+            >
+              <ArrowUp className="w-6 h-6 text-amber-400" />
+            </button>
+            <div />
 
-          <button
-            onTouchStart={() => (controlsRef.current.left = true)}
-            onTouchEnd={() => (controlsRef.current.left = false)}
-            onMouseDown={() => (controlsRef.current.left = true)}
-            onMouseUp={() => (controlsRef.current.left = false)}
-            className="w-11 h-11 rounded-xl bg-slate-900/90 active:bg-amber-500 border border-slate-700 flex items-center justify-center text-white"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+            <button
+              onTouchStart={() => (controlsRef.current.left = true)}
+              onTouchEnd={() => (controlsRef.current.left = false)}
+              onMouseDown={() => (controlsRef.current.left = true)}
+              onMouseUp={() => (controlsRef.current.left = false)}
+              onMouseLeave={() => (controlsRef.current.left = false)}
+              title="Steer Left (A / Left)"
+              className="w-11 sm:w-13 h-11 sm:h-13 rounded-xl bg-slate-900 active:bg-amber-500 hover:bg-slate-800 border-2 border-slate-700 active:border-yellow-300 flex items-center justify-center text-white font-black shadow transition-all"
+            >
+              <ArrowLeft className="w-6 h-6 text-amber-400" />
+            </button>
 
-          <button
-            onTouchStart={() => (controlsRef.current.backward = true)}
-            onTouchEnd={() => (controlsRef.current.backward = false)}
-            onMouseDown={() => (controlsRef.current.backward = true)}
-            onMouseUp={() => (controlsRef.current.backward = false)}
-            className="w-11 h-11 rounded-xl bg-slate-900/90 active:bg-amber-500 border border-slate-700 flex items-center justify-center text-white"
-          >
-            <ArrowDown className="w-5 h-5" />
-          </button>
+            <button
+              onTouchStart={() => (controlsRef.current.backward = true)}
+              onTouchEnd={() => (controlsRef.current.backward = false)}
+              onMouseDown={() => (controlsRef.current.backward = true)}
+              onMouseUp={() => (controlsRef.current.backward = false)}
+              onMouseLeave={() => (controlsRef.current.backward = false)}
+              title="Reverse (S / Down)"
+              className="w-11 sm:w-13 h-11 sm:h-13 rounded-xl bg-slate-900 active:bg-amber-500 hover:bg-slate-800 border-2 border-slate-700 active:border-yellow-300 flex items-center justify-center text-white font-black shadow transition-all"
+            >
+              <ArrowDown className="w-6 h-6 text-amber-400" />
+            </button>
 
-          <button
-            onTouchStart={() => (controlsRef.current.right = true)}
-            onTouchEnd={() => (controlsRef.current.right = false)}
-            onMouseDown={() => (controlsRef.current.right = true)}
-            onMouseUp={() => (controlsRef.current.right = false)}
-            className="w-11 h-11 rounded-xl bg-slate-900/90 active:bg-amber-500 border border-slate-700 flex items-center justify-center text-white"
-          >
-            <ArrowRight className="w-5 h-5" />
-          </button>
+            <button
+              onTouchStart={() => (controlsRef.current.right = true)}
+              onTouchEnd={() => (controlsRef.current.right = false)}
+              onMouseDown={() => (controlsRef.current.right = true)}
+              onMouseUp={() => (controlsRef.current.right = false)}
+              onMouseLeave={() => (controlsRef.current.right = false)}
+              title="Steer Right (D / Right)"
+              className="w-11 sm:w-13 h-11 sm:h-13 rounded-xl bg-slate-900 active:bg-amber-500 hover:bg-slate-800 border-2 border-slate-700 active:border-yellow-300 flex items-center justify-center text-white font-black shadow transition-all"
+            >
+              <ArrowRight className="w-6 h-6 text-amber-400" />
+            </button>
+          </div>
         </div>
 
         {/* ACTION BUTTONS (Boost, Brake, Horn, Reset) */}
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
+        <div className="flex flex-col gap-2 bg-[#0B1224]/80 backdrop-blur-md p-2 rounded-2xl border border-slate-700/80 shadow-2xl">
+          <div className="flex gap-2 justify-end">
             <button
               onClick={handleBlastHorn}
-              className="p-3 rounded-xl bg-purple-900/80 active:bg-purple-600 border border-purple-500 text-purple-200 text-xs font-bold"
+              title="Blast Horn Shockwave (B)"
+              className="py-2 px-3 sm:px-4 rounded-xl bg-purple-900/90 active:bg-purple-600 hover:bg-purple-800 border border-purple-500 text-purple-200 text-xs font-black shadow flex items-center gap-1"
             >
-              🎺 Blast
+              🎺 <span className="hidden sm:inline">BLAST</span>
             </button>
             <button
               onClick={handleResetCar}
-              className="p-3 rounded-xl bg-slate-800 active:bg-slate-700 border border-slate-700 text-slate-300"
+              title="Reset Chariot (R)"
+              className="p-2 sm:px-3 rounded-xl bg-slate-800 active:bg-slate-700 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-bold flex items-center gap-1"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-4 h-4 text-amber-400" />
+              <span className="hidden sm:inline">Reset</span>
             </button>
           </div>
 
@@ -444,7 +457,9 @@ export default function BibleWorld3D({
               onTouchEnd={() => (controlsRef.current.brake = false)}
               onMouseDown={() => (controlsRef.current.brake = true)}
               onMouseUp={() => (controlsRef.current.brake = false)}
-              className="py-3 px-4 rounded-xl bg-red-950/80 active:bg-red-600 border border-red-500 text-red-300 font-bold text-xs"
+              onMouseLeave={() => (controlsRef.current.brake = false)}
+              title="Handbrake (Space)"
+              className="py-3 px-4 sm:px-6 rounded-xl bg-red-950/90 active:bg-red-600 hover:bg-red-900 border-2 border-red-500 text-red-200 font-black text-xs uppercase shadow tracking-wider"
             >
               🛑 BRAKE
             </button>
@@ -454,9 +469,12 @@ export default function BibleWorld3D({
               onTouchEnd={() => (controlsRef.current.boost = false)}
               onMouseDown={() => (controlsRef.current.boost = true)}
               onMouseUp={() => (controlsRef.current.boost = false)}
-              className="py-3 px-5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-400 active:scale-95 text-slate-950 font-black text-xs shadow-lg"
+              onMouseLeave={() => (controlsRef.current.boost = false)}
+              title="Holy Speed Boost (Shift)"
+              className="py-3 px-5 sm:px-8 rounded-xl bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-300 active:scale-95 text-slate-950 font-black text-xs uppercase shadow-xl border-2 border-yellow-200 tracking-wider flex items-center gap-1"
             >
-              ⚡ BOOST
+              <Zap className="w-4 h-4 fill-slate-950" />
+              <span>BOOST</span>
             </button>
           </div>
         </div>

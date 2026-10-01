@@ -28,9 +28,21 @@ export default function OnboardingModal() {
     setOnboardingComplete(name, selectedAvatar);
   };
 
+  const handleSkip = () => {
+    setOnboardingComplete('Seeker', 'Sparkles');
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
       <div className="relative w-full max-w-lg bg-gradient-to-b from-[#16233d] to-[#0d1424] rounded-2xl border-2 border-amber-500/40 shadow-2xl p-6 sm:p-8 text-center text-slate-100 overflow-hidden">
+        {/* Quick Skip button */}
+        <button
+          onClick={handleSkip}
+          className="absolute top-4 right-4 text-xs font-bold text-slate-400 hover:text-amber-300 py-1 px-2.5 rounded-lg bg-slate-900/80 border border-slate-700"
+        >
+          Skip & Play 3D ✕
+        </button>
+
         {/* Background glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
 

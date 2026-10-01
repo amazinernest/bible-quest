@@ -189,69 +189,83 @@ export class ChariotVehicle {
   }
 
   public update(controls: ChariotControls, delta: number) {
-    // 1. Controls processing & Physics Forces
-    const forwardVec = new THREE.Vector3(0, 0, 1).applyQuaternion(
+    // 1. Controls processing & Arcade Physics
+    const euler = new THREE.Euler();
+    euler.setFromQuaternion(
       new THREE.Quaternion(
         this.body.quaternion.x,
         this.body.quaternion.y,
         this.body.quaternion.z,
         this.body.quaternion.w
-      )
+      ),
+      'YXZ'
     );
+    const yaw = euler.y;
 
-    // Current linear velocity along vehicle forward direction
-    const currentVel = new THREE.Vector3(
-      this.body.velocity.x,
-      this.body.velocity.y,
-      this.body.velocity.z
-    );
-    this.speed = currentVel.dot(forwardVec);
+    // Forward direction unit vector on XZ plane
+    const forwardX = -Math.sin(yaw);
+    const forwardZ = -Math.cos(yaw);
+
+    // Current linear speed along forward direction
+    this.speed = -(this.body.velocity.x * forwardX + this.body.velocity.z * forwardZ);
 
     // Steering smooth lerp
     let targetSteer = 0;
     if (controls.left) targetSteer += this.maxSteering;
     if (controls.right) targetSteer -= this.maxSteering;
-    this.steeringAngle = THREE.MathUtils.lerp(this.steeringAngle, targetSteer, delta * 10);
+    this.steeringAngle = THREE.MathUtils.lerp(this.steeringAngle, targetSteer, delta * 12);
 
     // Acceleration & Braking forces
-    let engineForce = 0;
-    const boostMultiplier = controls.boost ? 1.6 : 1.0;
+    const boostMultiplier = controls.boost ? 1.7 : 1.0;
+    let targetSpeed = 0;
 
     if (controls.forward) {
-      if (this.speed < this.maxSpeed * boostMultiplier) {
-        engineForce = this.acceleration * this.body.mass * boostMultiplier;
-      }
+      targetSpeed = this.maxSpeed * boostMultiplier;
     } else if (controls.backward) {
-      if (this.speed > -this.reverseSpeed) {
-        engineForce = -this.acceleration * 0.6 * this.body.mass;
-      }
+      targetSpeed = -this.reverseSpeed;
     }
 
-    if (controls.brake) {
+    // Snappy velocity acceleration
+    if (controls.forward || controls.backward) {
+      const accelRate = delta * this.acceleration;
+      const vx = forwardX * targetSpeed;
+      const vz = forwardZ * targetSpeed;
+
+      this.body.velocity.x = THREE.MathUtils.lerp(this.body.velocity.x, vx, accelRate);
+      this.body.velocity.z = THREE.MathUtils.lerp(this.body.velocity.z, vz, accelRate);
+    } else {
+      // Natural rolling friction
       this.body.velocity.x *= 0.94;
       this.body.velocity.z *= 0.94;
     }
 
-    // Apply driving force
-    if (Math.abs(engineForce) > 0) {
-      const forceCannon = new CANNON.Vec3(
-        forwardVec.x * engineForce,
-        0,
-        forwardVec.z * engineForce
-      );
-      this.body.applyForce(forceCannon, this.body.position);
+    if (controls.brake) {
+      this.body.velocity.x *= 0.85;
+      this.body.velocity.z *= 0.85;
     }
 
-    // Turn torque proportional to forward/reverse speed
-    if (Math.abs(this.steeringAngle) > 0.01 && Math.abs(this.speed) > 0.5) {
-      const turnSign = this.speed >= 0 ? 1 : -1;
-      const torqueMag = this.steeringAngle * this.body.mass * 8 * turnSign;
-      this.body.angularVelocity.y = torqueMag * delta * 4;
+    // Turn yaw rotation
+    if (Math.abs(this.steeringAngle) > 0.01) {
+      const isMoving = Math.abs(this.body.velocity.x) + Math.abs(this.body.velocity.z) > 0.2;
+      if (isMoving || controls.forward || controls.backward) {
+        const turnSpeed = controls.backward ? -2.8 : 2.8;
+        this.body.angularVelocity.y = this.steeringAngle * turnSpeed;
+      }
+    } else {
+      this.body.angularVelocity.y *= 0.8;
     }
 
-    // Stabilize roll/pitch to prevent flipping over easily
-    this.body.angularVelocity.x *= 0.92;
-    this.body.angularVelocity.z *= 0.92;
+    // Keep vehicle upright (prevent flipping over)
+    this.body.quaternion.x *= 0.9;
+    this.body.quaternion.z *= 0.9;
+    this.body.angularVelocity.x *= 0.85;
+    this.body.angularVelocity.z *= 0.85;
+
+    // Clamp bottom Y so car doesn't fall below ground
+    if (this.body.position.y < 0.6) {
+      this.body.position.y = 0.6;
+      if (this.body.velocity.y < 0) this.body.velocity.y = 0;
+    }
 
     // 2. Sync Three.js Mesh with Cannon.js Physics Body
     this.mesh.position.set(
