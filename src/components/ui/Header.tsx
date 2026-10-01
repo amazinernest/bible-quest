@@ -66,7 +66,7 @@ export default function Header({ currentView, setCurrentView, openSettings, open
             onClick={() => setCurrentView('home')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               currentView === 'home'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >
@@ -74,32 +74,32 @@ export default function Header({ currentView, setCurrentView, openSettings, open
             Home
           </button>
           <button
-            onClick={() => setCurrentView('world3d')}
+            onClick={() => setCurrentView('map')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
-              currentView === 'world3d'
-                ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black shadow-md'
+              currentView === 'map'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
                 : 'text-amber-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >
-            <span>🏎️</span>
-            3D Explorer
+            <Sparkles className="w-3.5 h-3.5" />
+            Odyssey Map
           </button>
           <button
-            onClick={() => setCurrentView('journey')}
+            onClick={() => setCurrentView('leagues')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
-              currentView === 'journey'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
+              currentView === 'leagues'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            Journey Map
+            <Trophy className="w-3.5 h-3.5 text-yellow-300" />
+            Leagues
           </button>
           <button
             onClick={() => setCurrentView('relics')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               currentView === 'relics'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >
@@ -110,7 +110,7 @@ export default function Header({ currentView, setCurrentView, openSettings, open
             onClick={() => setCurrentView('arcade')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               currentView === 'arcade'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >
@@ -121,7 +121,7 @@ export default function Header({ currentView, setCurrentView, openSettings, open
             onClick={() => setCurrentView('codex')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               currentView === 'codex'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >
@@ -129,21 +129,10 @@ export default function Header({ currentView, setCurrentView, openSettings, open
             Codex
           </button>
           <button
-            onClick={() => setCurrentView('leaderboard')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
-              currentView === 'leaderboard'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-            }`}
-          >
-            <Trophy className="w-3.5 h-3.5" />
-            Ranks
-          </button>
-          <button
             onClick={() => setCurrentView('shop')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               currentView === 'shop'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >

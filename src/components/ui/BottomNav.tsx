@@ -11,11 +11,9 @@ interface BottomNavProps {
 export default function BottomNav({ currentView, setCurrentView }: BottomNavProps) {
   const tabs = [
     { id: 'home', label: 'Home', icon: Home },
-    { id: 'world3d', label: '3D World', icon: Zap },
-    { id: 'journey', label: 'Journey', icon: Sparkles },
+    { id: 'map', label: 'Odyssey Map', icon: Sparkles },
+    { id: 'leagues', label: 'Leagues', icon: Trophy },
     { id: 'relics', label: 'Relics', icon: Shield },
-    { id: 'arcade', label: 'Speed Rush', icon: Flame },
-    { id: 'codex', label: 'Codex', icon: BookOpen },
     { id: 'shop', label: 'Sanctuary', icon: ShoppingBag },
   ];
 

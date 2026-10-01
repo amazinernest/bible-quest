@@ -8,15 +8,19 @@ import BottomNav from '@/components/ui/BottomNav';
 import ToastContainer from '@/components/ui/ToastContainer';
 import OnboardingModal from '@/components/modals/OnboardingModal';
 import SettingsModal from '@/components/modals/SettingsModal';
-import HomeView from '@/components/home/HomeView';
-import JourneyMap from '@/components/journey/JourneyMap';
+import HomeOverhaul from '@/components/home/HomeOverhaul';
+import WorldMap2D from '@/components/world2d/WorldMap2D';
+import SlingshotStrike from '@/components/minigames/SlingshotStrike';
+import RedSeaSwipe from '@/components/minigames/RedSeaSwipe';
+import JerichoRhythm from '@/components/minigames/JerichoRhythm';
+import CovenantWordle from '@/components/minigames/CovenantWordle';
+import LeaguesView from '@/components/leagues/LeaguesView';
 import LeaderboardView from '@/components/leaderboard/LeaderboardView';
 import AchievementsView from '@/components/achievements/AchievementsView';
 import SanctuaryShop from '@/components/shop/SanctuaryShop';
 import ProfileView from '@/components/profile/ProfileView';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import GameHub from '@/components/game/GameHub';
-import BibleWorld3D from '@/components/world3d/BibleWorld3D';
 import RelicsSanctuary from '@/components/relics/RelicsSanctuary';
 import CodexView from '@/components/codex/CodexView';
 import ArcadeRushHub from '@/components/arcade/ArcadeRushHub';
@@ -32,7 +36,7 @@ function MainGameApp() {
     profile,
   } = useGame();
 
-  const [currentView, setCurrentView] = useState<string>('world3d');
+  const [currentView, setCurrentView] = useState<string>('home');
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isWheelOpen, setIsWheelOpen] = useState<boolean>(false);
   const searchParams = useSearchParams();
@@ -43,7 +47,6 @@ function MainGameApp() {
     if (challengeParam) {
       const challengeData = decodeFriendChallenge(challengeParam);
       if (challengeData) {
-        // Automatically start the friend's mode challenge!
         startModeRound(challengeData.gameMode || 'blitz');
       }
     }
@@ -54,15 +57,11 @@ function MainGameApp() {
   };
 
   const handleReturnToJourney = () => {
-    setCurrentView('world3d');
+    setCurrentView('map');
   };
 
   const handleGoToShop = () => {
     setCurrentView('shop');
-  };
-
-  const handleOpenAdmin = () => {
-    setCurrentView('admin');
   };
 
   return (
@@ -86,34 +85,42 @@ function MainGameApp() {
           />
         ) : (
           <>
-            {currentView === 'world3d' && (
-              <BibleWorld3D
-                onStartMode={handleStartMode}
-                onStartStage={(lvl, stg, isBoss) => startStageRound(lvl, stg, isBoss)}
-                onOpenWheel={() => setIsWheelOpen(true)}
-                onOpenRelics={() => setCurrentView('relics')}
-                onOpenCodex={() => setCurrentView('codex')}
-                onOpenArcade={() => setCurrentView('arcade')}
-                onSwitchTo2D={() => setCurrentView('home')}
-              />
-            )}
             {currentView === 'home' && (
-              <HomeView
+              <HomeOverhaul
                 onNavigate={setCurrentView}
                 onStartMode={handleStartMode}
                 onOpenWheel={() => setIsWheelOpen(true)}
+                onOpenMiniGame={(gameId) => setCurrentView(gameId)}
               />
             )}
-            {currentView === 'journey' && <JourneyMap />}
+            {currentView === 'map' && (
+              <WorldMap2D
+                onSelectStage={(lvl, stg, isBoss) => startStageRound(lvl, stg, isBoss)}
+                onOpenMiniGame={(gameId) => setCurrentView(gameId)}
+              />
+            )}
+            {currentView === 'slingshot' && (
+              <SlingshotStrike onBack={() => setCurrentView('home')} />
+            )}
+            {currentView === 'redsea' && (
+              <RedSeaSwipe onBack={() => setCurrentView('home')} />
+            )}
+            {currentView === 'jericho' && (
+              <JerichoRhythm onBack={() => setCurrentView('home')} />
+            )}
+            {currentView === 'wordle' && (
+              <CovenantWordle onBack={() => setCurrentView('home')} />
+            )}
+            {currentView === 'leagues' && <LeaguesView />}
             {currentView === 'relics' && <RelicsSanctuary />}
-            {currentView === 'arcade' && <ArcadeRushHub onBack={() => setCurrentView('world3d')} />}
+            {currentView === 'arcade' && <ArcadeRushHub onBack={() => setCurrentView('home')} />}
             {currentView === 'codex' && <CodexView />}
             {currentView === 'leaderboard' && <LeaderboardView />}
             {currentView === 'achievements' && <AchievementsView />}
             {currentView === 'shop' && <SanctuaryShop />}
             {currentView === 'profile' && <ProfileView />}
             {currentView === 'admin' && (
-              <AdminDashboard onBack={() => setCurrentView('world3d')} />
+              <AdminDashboard onBack={() => setCurrentView('home')} />
             )}
           </>
         )}
