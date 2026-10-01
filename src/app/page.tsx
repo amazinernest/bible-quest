@@ -32,7 +32,7 @@ function MainGameApp() {
     profile,
   } = useGame();
 
-  const [currentView, setCurrentView] = useState<string>('home');
+  const [currentView, setCurrentView] = useState<string>('world3d');
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isWheelOpen, setIsWheelOpen] = useState<boolean>(false);
   const searchParams = useSearchParams();
@@ -54,7 +54,7 @@ function MainGameApp() {
   };
 
   const handleReturnToJourney = () => {
-    setCurrentView('journey');
+    setCurrentView('world3d');
   };
 
   const handleGoToShop = () => {
@@ -86,6 +86,17 @@ function MainGameApp() {
           />
         ) : (
           <>
+            {currentView === 'world3d' && (
+              <BibleWorld3D
+                onStartMode={handleStartMode}
+                onStartStage={(lvl, stg, isBoss) => startStageRound(lvl, stg, isBoss)}
+                onOpenWheel={() => setIsWheelOpen(true)}
+                onOpenRelics={() => setCurrentView('relics')}
+                onOpenCodex={() => setCurrentView('codex')}
+                onOpenArcade={() => setCurrentView('arcade')}
+                onSwitchTo2D={() => setCurrentView('home')}
+              />
+            )}
             {currentView === 'home' && (
               <HomeView
                 onNavigate={setCurrentView}
@@ -93,23 +104,16 @@ function MainGameApp() {
                 onOpenWheel={() => setIsWheelOpen(true)}
               />
             )}
-            {currentView === 'world3d' && (
-              <BibleWorld3D
-                onStartMode={handleStartMode}
-                onStartStage={(lvl, stg, isBoss) => startStageRound(lvl, stg, isBoss)}
-                onSwitchTo2D={() => setCurrentView('home')}
-              />
-            )}
             {currentView === 'journey' && <JourneyMap />}
             {currentView === 'relics' && <RelicsSanctuary />}
-            {currentView === 'arcade' && <ArcadeRushHub onBack={() => setCurrentView('home')} />}
+            {currentView === 'arcade' && <ArcadeRushHub onBack={() => setCurrentView('world3d')} />}
             {currentView === 'codex' && <CodexView />}
             {currentView === 'leaderboard' && <LeaderboardView />}
             {currentView === 'achievements' && <AchievementsView />}
             {currentView === 'shop' && <SanctuaryShop />}
             {currentView === 'profile' && <ProfileView />}
             {currentView === 'admin' && (
-              <AdminDashboard onBack={() => setCurrentView('home')} />
+              <AdminDashboard onBack={() => setCurrentView('world3d')} />
             )}
           </>
         )}

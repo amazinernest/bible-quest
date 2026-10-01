@@ -30,10 +30,22 @@ import { GameMode } from '@/types/game';
 interface BibleWorld3DProps {
   onStartMode: (mode: GameMode) => void;
   onStartStage: (level: number, stage: number, isBoss: boolean) => void;
-  onSwitchTo2D: () => void;
+  onOpenWheel?: () => void;
+  onOpenRelics?: () => void;
+  onOpenCodex?: () => void;
+  onOpenArcade?: () => void;
+  onSwitchTo2D?: () => void;
 }
 
-export default function BibleWorld3D({ onStartMode, onStartStage, onSwitchTo2D }: BibleWorld3DProps) {
+export default function BibleWorld3D({
+  onStartMode,
+  onStartStage,
+  onOpenWheel,
+  onOpenRelics,
+  onOpenCodex,
+  onOpenArcade,
+  onSwitchTo2D,
+}: BibleWorld3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { profile, updateProfile } = useGame();
 
@@ -252,6 +264,14 @@ export default function BibleWorld3D({ onStartMode, onStartStage, onSwitchTo2D }
 
   const handleEnterChallenge = (wp: HolyWaypoint) => {
     setActiveWaypoint(null);
+    if (wp.specialAction) {
+      if (wp.specialAction === 'wheel' && onOpenWheel) onOpenWheel();
+      if (wp.specialAction === 'relics' && onOpenRelics) onOpenRelics();
+      if (wp.specialAction === 'codex' && onOpenCodex) onOpenCodex();
+      if (wp.specialAction === 'arcade' && onOpenArcade) onOpenArcade();
+      return;
+    }
+
     if (wp.levelNumber && wp.stageNumber) {
       onStartStage(wp.levelNumber, wp.stageNumber, !!wp.bossStage);
     } else {

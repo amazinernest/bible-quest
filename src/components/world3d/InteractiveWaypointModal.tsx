@@ -56,23 +56,34 @@ export default function InteractiveWaypointModal({
 
         {/* DETAILS INFO CARD */}
         <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-400 font-bold uppercase">Mode Category:</span>
-            <span className="text-amber-400 font-black uppercase">{waypoint.mode.replace('_', ' ')}</span>
-          </div>
-          {waypoint.levelNumber && (
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400 font-bold uppercase">Journey Target:</span>
-              <span className="text-white font-bold">
-                Level {waypoint.levelNumber} - Stage {waypoint.stageNumber}
-              </span>
+          {waypoint.specialAction ? (
+            <div className="text-xs text-slate-300 font-medium">
+              {waypoint.specialAction === 'wheel' && 'Spin the 3D Fortune Obelisk to claim daily blessings, XP boosts, and Wisdom Coins!'}
+              {waypoint.specialAction === 'relics' && 'Consecrate biblical relics (Shield of Faith, Trumpet of Gideon) to activate passive perks in all trials.'}
+              {waypoint.specialAction === 'arcade' && 'Engage in a 60-second high-speed blitz. Correct answers add +3s, errors deduct -5s.'}
+              {waypoint.specialAction === 'codex' && 'Examine ancient biblical manuscripts, archaeological discoveries, and Greek & Hebrew linguistic insights.'}
             </div>
-          )}
-          {waypoint.bossStage && (
-            <div className="p-2 rounded-xl bg-red-950/60 border border-red-500/50 flex items-center gap-2 text-xs font-black text-red-300">
-              <Shield className="w-4 h-4 text-red-400" />
-              <span>Boss Encounter: High Stakes Scripture Trial!</span>
-            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400 font-bold uppercase">Mode Category:</span>
+                <span className="text-amber-400 font-black uppercase">{waypoint.mode.replace('_', ' ')}</span>
+              </div>
+              {waypoint.levelNumber && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-400 font-bold uppercase">Journey Target:</span>
+                  <span className="text-white font-bold">
+                    Level {waypoint.levelNumber} - Stage {waypoint.stageNumber}
+                  </span>
+                </div>
+              )}
+              {waypoint.bossStage && (
+                <div className="p-2 rounded-xl bg-red-950/60 border border-red-500/50 flex items-center gap-2 text-xs font-black text-red-300">
+                  <Shield className="w-4 h-4 text-red-400" />
+                  <span>Boss Encounter: High Stakes Scripture Trial!</span>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -83,7 +94,15 @@ export default function InteractiveWaypointModal({
             className="w-full py-4 px-8 rounded-2xl font-black text-sm uppercase tracking-wider text-slate-950 btn-game-primary shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2"
           >
             <Play className="w-4 h-4 fill-slate-950" />
-            ENTER SACRED TRIAL
+            {waypoint.specialAction === 'wheel'
+              ? 'OPEN WHEEL OF PROVIDENCE'
+              : waypoint.specialAction === 'relics'
+              ? 'ENTER RELICS SANCTUARY'
+              : waypoint.specialAction === 'arcade'
+              ? 'START SPEED RUSH TRIAL'
+              : waypoint.specialAction === 'codex'
+              ? 'OPEN SCRIPTURE CODEX'
+              : 'ENTER SACRED TRIAL'}
           </button>
           <button
             onClick={onClose}
